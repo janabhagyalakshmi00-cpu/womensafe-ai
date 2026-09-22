@@ -148,10 +148,10 @@ export default function Home() {
   } finally {
     setBusy(false);
   }
-};const startAnalysis = async () => {
-  const file = fileInputRef.current?.files?.[0];
+};
 
-  if (!file) {
+const startAnalysis = async () => {
+  if (!run) {
     setBackendError("Please select the video again.");
     return;
   }
@@ -160,17 +160,13 @@ export default function Home() {
   setBackendError("");
 
   try {
-    const result = await api.detect(file);
+    const result = await api.process(run.id);
 
-    console.log("DETECT RESULT:", result);
-
-    setDetections(result.detections || []);
-
+    setRun(result.run);
 
     await refresh();
-
   } catch (error) {
-    console.error("DETECT ERROR:", error);
+    console.error("ANALYSIS ERROR:", error);
 
     setBackendError(
       error instanceof Error ? error.message : "AI analysis failed."
@@ -179,6 +175,7 @@ export default function Home() {
     setBusy(false);
   }
 };
+
   const saveConfig = async () => {
     setSavingConfig(true);
     setConfigSaved(false);
