@@ -117,7 +117,7 @@ async def detect(file: UploadFile = File(...)):
         stream=True,
         vid_stride=10,
         imgsz=320,
-        conf=0.4
+        conf=0.6
     )
 
     detections = []
@@ -133,18 +133,22 @@ async def detect(file: UploadFile = File(...)):
                 confidence = float(box.conf[0])
                 class_name = model.names[class_id]
 
-                detections.append({
-                    "class": class_name,
-                    "confidence": round(confidence, 2)
-                })
-
+                # Only count person detections
                 if class_name == "person":
                     frame_people += 1
                     total_people += 1
 
-        max_people_in_frame = max(max_people_in_frame, frame_people)
+                    detections.append({
+                        "class": "person",
+                        "confidence": round(confidence, 2)
+                    })
 
-    # Simple Phase-1 alert rule
+        max_people_in_frame = max(
+            max_people_in_frame,
+            frame_people
+        )
+
+    # Phase-1 alert rule
     alert = None
 
     if max_people_in_frame >= 10:

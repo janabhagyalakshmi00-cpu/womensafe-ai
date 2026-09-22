@@ -119,3 +119,8 @@ backend/data/*.jpg
 # Manus version file (auto-generated, not part of source)
 client/public/__manus__/version.json
 .project-config.json
+
+# WomenSafe AI runtime files
+backend/uploads/
+backend/__pycache__/
+backend/debug_*.jpg
