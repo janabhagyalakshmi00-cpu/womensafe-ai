@@ -79,6 +79,7 @@ export default function Home() {
   const [configSaved, setConfigSaved] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const refresh = async () => {
@@ -132,6 +133,7 @@ export default function Home() {
 
   const handleFile = async (file?: File) => {
   if (!file) return;
+  setSelectedFile(file);
 
   setBusy(true);
   setBackendError("");
@@ -151,9 +153,7 @@ export default function Home() {
 };
 
 const startAnalysis = async () => {
-  const file = fileInputRef.current?.files?.[0];
-
-  if (!file) {
+  if (!selectedFile) {
     setBackendError("Please select the video again.");
     return;
   }
@@ -162,7 +162,7 @@ const startAnalysis = async () => {
   setBackendError("");
 
   try {
-    const result = await api.detect(file);
+    const result = await api.detect(selectedFile);
 
     console.log("DETECT RESULT:", result);
 
@@ -179,7 +179,6 @@ const startAnalysis = async () => {
     setBusy(false);
   }
 };
-
   const saveConfig = async () => {
     setSavingConfig(true);
     setConfigSaved(false);
