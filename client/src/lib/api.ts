@@ -1,17 +1,11 @@
 function resolveApiBase() {
   const configured = import.meta.env.VITE_API_URL as string | undefined;
-  if (configured) return configured.replace(/\/$/, "");
-  if (typeof window === "undefined") return "http://localhost:8000";
-  const current = new URL(window.location.href);
-  if (current.hostname === "localhost" || current.hostname === "127.0.0.1") {
-    current.port = "8000";
-    return current.origin;
+
+  if (configured) {
+    return configured.replace(/\/$/, "");
   }
-  if (current.hostname.startsWith("3000-")) {
-    current.hostname = `8000-${current.hostname.slice(5)}`;
-    return current.origin;
-  }
-  return "http://localhost:8000";
+
+  return "https://womensafe-ai-backend.onrender.com";
 }
 
 export const API_BASE = resolveApiBase();

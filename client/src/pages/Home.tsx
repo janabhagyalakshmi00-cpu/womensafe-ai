@@ -82,27 +82,35 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const refresh = async () => {
-    try {
-      const [nextSummary, nextAlerts, nextCameras] = await Promise.all([
-        api.summary(),
-        api.alerts(),
-        api.cameras(),
-      ]);
-      setSummary(nextSummary);
+  try {
+    const health = await api.health();
 
-if (nextSummary.latest_run) {
-  setRun(nextSummary.latest_run);
-}
+    setBackendOnline(health.status === "ok");
+    setBackendError("");
 
-setAlerts(nextAlerts);
-      setCameras(nextCameras);
-      setBackendOnline(true);
-      setBackendError("");
-    } catch (error) {
-      setBackendOnline(false);
-      setBackendError(error instanceof Error ? error.message : "Could not reach the FastAPI service.");
+    const [nextSummary, nextAlerts, nextCameras] = await Promise.all([
+      api.summary(),
+      api.alerts(),
+      api.cameras(),
+    ]);
+
+    setSummary(nextSummary);
+
+    if (nextSummary.latest_run) {
+      setRun(nextSummary.latest_run);
     }
-  };
+
+    setAlerts(nextAlerts);
+    setCameras(nextCameras);
+  } catch (error) {
+    setBackendOnline(false);
+    setBackendError(
+      error instanceof Error
+        ? error.message
+        : "Could not reach the FastAPI service."
+    );
+  }
+};
 
   useEffect(() => {
     refresh();
