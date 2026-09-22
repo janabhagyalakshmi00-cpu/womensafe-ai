@@ -151,7 +151,9 @@ export default function Home() {
 };
 
 const startAnalysis = async () => {
-  if (!run) {
+  const file = fileInputRef.current?.files?.[0];
+
+  if (!file) {
     setBackendError("Please select the video again.");
     return;
   }
@@ -160,13 +162,15 @@ const startAnalysis = async () => {
   setBackendError("");
 
   try {
-    const result = await api.process(run.id);
+    const result = await api.detect(file);
 
-    setRun(result.run);
+    console.log("DETECT RESULT:", result);
+
+    setDetections(result.detections || []);
 
     await refresh();
   } catch (error) {
-    console.error("ANALYSIS ERROR:", error);
+    console.error("DETECT ERROR:", error);
 
     setBackendError(
       error instanceof Error ? error.message : "AI analysis failed."
